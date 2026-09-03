@@ -4,6 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AskGuideButton from "@/components/AskGuideButton";
+import Reveal from "@/components/motion/Reveal";
+import { fadeUp, slideInLeft, slideInRight } from "@/lib/motion";
 
 export const metadata: Metadata = { title: "About — Pakistan Tourism" };
 
@@ -12,7 +14,7 @@ export default function AboutPage() {
     <>
       <Header />
       <main className="about-page container">
-        <div className="about-hero">
+        <Reveal className="about-hero" variants={fadeUp}>
           <span className="eyebrow">05 / Our approach</span>
           <h1>
             Travel with
@@ -23,9 +25,9 @@ export default function AboutPage() {
             Pakistan Tourism is a considered starting point for places, stories, and routes — built to leave room for
             local knowledge and a change of plan.
           </p>
-        </div>
+        </Reveal>
         <div className="about-grid">
-          <article>
+          <Reveal as="article" variants={slideInLeft} delay={0.1}>
             <span className="eyebrow">What we share</span>
             <h2>
               Notes, not
@@ -43,8 +45,8 @@ export default function AboutPage() {
             <Link href="/destinations" className="text-button">
               Explore the atlas <ArrowUpRight size={16} />
             </Link>
-          </article>
-          <aside>
+          </Reveal>
+          <Reveal as="aside" variants={slideInRight} delay={0.2}>
             <div className="about-note">
               <span className="index-number">FIELD NOTE / 09</span>
               <p>Go gently. Look closely. Leave room for local knowledge.</p>
@@ -56,7 +58,7 @@ export default function AboutPage() {
               grounded in the reviewed notes shown here and should be checked against current local sources.
             </p>
             <AskGuideButton />
-          </aside>
+          </Reveal>
         </div>
       </main>
       <Footer />

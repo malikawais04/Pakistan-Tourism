@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { easeOut } from "@/lib/motion";
 
 export default function Lightbox({
   images,
@@ -40,7 +42,7 @@ export default function Lightbox({
 
   const image = images[activeIndex];
   return (
-    <div
+    <motion.div
       className={`lightbox-overlay ${direction}`}
       role="dialog"
       aria-modal="true"
@@ -48,22 +50,62 @@ export default function Lightbox({
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: easeOut }}
     >
-      <div className="lightbox-frame">
+      <motion.div
+        className="lightbox-frame"
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 10 }}
+        transition={{ duration: 0.35, ease: easeOut }}
+      >
         <div className="lightbox-top">
           <span className="eyebrow">{title} / Gallery</span>
-          <button className="icon-button lightbox-close" onClick={onClose} aria-label="Close gallery">
+          <motion.button
+            className="icon-button lightbox-close"
+            onClick={onClose}
+            aria-label="Close gallery"
+            whileHover={{ scale: 1.08, rotate: 90 }}
+            whileTap={{ scale: 0.92 }}
+          >
             <X size={21} />
-          </button>
+          </motion.button>
         </div>
         <div className="lightbox-stage">
-          <button className="lightbox-nav previous" onClick={() => show(activeIndex - 1, "prev")} aria-label="Previous image">
+          <motion.button
+            className="lightbox-nav previous"
+            onClick={() => show(activeIndex - 1, "prev")}
+            aria-label="Previous image"
+            whileHover={{ scale: 1.1, x: -2 }}
+            whileTap={{ scale: 0.9 }}
+          >
             <ArrowLeft size={20} />
-          </button>
-          <img key={image} className="lightbox-image" src={image} alt={`${title} gallery image ${activeIndex + 1}`} />
-          <button className="lightbox-nav next" onClick={() => show(activeIndex + 1, "next")} aria-label="Next image">
+          </motion.button>
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.img
+              key={image}
+              className="lightbox-image"
+              src={image}
+              alt={`${title} gallery image ${activeIndex + 1}`}
+              custom={direction}
+              initial={{ opacity: 0, x: direction === "next" ? 40 : -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction === "next" ? -40 : 40 }}
+              transition={{ duration: 0.35, ease: easeOut }}
+            />
+          </AnimatePresence>
+          <motion.button
+            className="lightbox-nav next"
+            onClick={() => show(activeIndex + 1, "next")}
+            aria-label="Next image"
+            whileHover={{ scale: 1.1, x: 2 }}
+            whileTap={{ scale: 0.9 }}
+          >
             <ArrowRight size={20} />
-          </button>
+          </motion.button>
         </div>
         <div className="lightbox-bottom">
           <span>
@@ -71,7 +113,7 @@ export default function Lightbox({
           </span>
           <span>Use arrow keys to browse · Esc to close</span>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
