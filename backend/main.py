@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.config import get_settings
 from core.database import init_db
 from routers import chat
+from services import bm25_service
 
 settings = get_settings()
 
@@ -13,12 +14,16 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    try:
+        await bm25_service.refresh_index()
+    except Exception:
+        pass
     yield
 
 
 app = FastAPI(
     title="Pakistan Tourism — RAG Guide API",
-    description="FastAPI backend powering the Pakistan Tourism chatbot: OpenAI + Qdrant Cloud + Neon Postgres.",
+    description="FastAPI backend powering the Pakistan Tourism chatbot: Groq + Qdrant Cloud (hybrid dense/BM25 retrieval) + Neon Postgres.",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -41,4 +46,4 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy"}
+    return {"status": "healthy", "bm25_ready": bm25_service.is_ready()}

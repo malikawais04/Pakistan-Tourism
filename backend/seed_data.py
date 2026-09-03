@@ -1,9 +1,3 @@
-"""The reviewed travel notes that ground the RAG guide's answers.
-
-Run `python -m backend.seed_data` (from the project root, with your .env
-configured) to embed these notes with OpenAI and upsert them into your
-Qdrant Cloud collection.
-"""
 import asyncio
 
 GUIDE_NOTES: list[dict] = [
@@ -47,10 +41,11 @@ GUIDE_NOTES: list[dict] = [
 
 
 async def main() -> None:
-    from .services import qdrant_service
+    from services import bm25_service, qdrant_service
 
     await qdrant_service.ensure_collection()
     await qdrant_service.upsert_notes(GUIDE_NOTES)
+    await bm25_service.refresh_index()
     print(f"Seeded {len(GUIDE_NOTES)} notes into Qdrant collection.")
 
 

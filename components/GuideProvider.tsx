@@ -4,6 +4,8 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Send, Sparkles, X } from "lucide-react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { askGuide, type ChatSource, type ChatTurn } from "@/lib/api";
 import { easeOut } from "@/lib/motion";
 
@@ -42,8 +44,8 @@ export default function GuideProvider({ children }: { children: ReactNode }) {
               <Sparkles size={16} />
             </motion.span>
             <span>
-              <b>RAG guide</b>
-              <small>Live source-aware chat</small>
+              <b>Bhai, kya scn hy?</b>
+              <small>No bakwas, just travel intel.</small>
             </span>
             <ArrowUpRight size={14} />
           </motion.button>
@@ -53,6 +55,30 @@ export default function GuideProvider({ children }: { children: ReactNode }) {
     </GuideContext.Provider>
   );
 }
+
+function GuideMarkdown({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" />,
+        p: ({ node, ...props }) => <p className="guide-md-p" {...props} />,
+        ul: ({ node, ...props }) => <ul className="guide-md-list" {...props} />,
+        ol: ({ node, ...props }) => <ol className="guide-md-list guide-md-list--ordered" {...props} />,
+        li: ({ node, ...props }) => <li className="guide-md-item" {...props} />,
+        strong: ({ node, ...props }) => <strong className="guide-md-strong" {...props} />,
+        code: ({ node, ...props }) => <code className="guide-md-code" {...props} />,
+        h1: ({ node, ...props }) => <p className="guide-md-heading" {...props} />,
+        h2: ({ node, ...props }) => <p className="guide-md-heading" {...props} />,
+        h3: ({ node, ...props }) => <p className="guide-md-heading" {...props} />,
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+}
+
+const MAX_HISTORY_TURNS = 4;
 
 function GuidePanel({ close }: { close: () => void }) {
   const [message, setMessage] = useState("");
@@ -71,7 +97,8 @@ function GuidePanel({ close }: { close: () => void }) {
     if (!retryQuestion) setHistory((prev) => [...prev, { role: "user", content: question }]);
     setPending(true);
     try {
-      const result = await askGuide(question, history);
+      const recentHistory = history.slice(-MAX_HISTORY_TURNS);
+      const result = await askGuide(question, recentHistory);
       setHistory((prev) => [...prev, { role: "assistant", content: result.answer }]);
       setSources(result.sources || []);
     } catch {
@@ -103,6 +130,7 @@ function GuidePanel({ close }: { close: () => void }) {
         <div className="guide-head">
           <div>
             <span className="eyebrow">A grounded companion</span>
+            <span className="eyebrow-2">Be cautious - AI can make mistakes</span>
             <h2>Ask the guide.</h2>
           </div>
           <motion.button
@@ -144,7 +172,7 @@ function GuidePanel({ close }: { close: () => void }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.35, ease: easeOut }}
               >
-                {turn.content}
+                {turn.role === "assistant" ? <GuideMarkdown content={turn.content} /> : turn.content}
               </motion.div>
             ))}
           </AnimatePresence>

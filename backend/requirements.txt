@@ -2,10 +2,10 @@ fastapi==0.115.0
 uvicorn[standard]==0.30.6
 pydantic==2.9.2
 pydantic-settings==2.5.2
-openai==1.51.0
 qdrant-client==1.11.3
 sqlalchemy[asyncio]==2.0.35
 asyncpg==0.29.0
 python-dotenv==1.0.1
-sentence-transformers
-groq
+sentence-transformers==3.1.1
+groq==1.7.0
+rank-bm25==0.2.2

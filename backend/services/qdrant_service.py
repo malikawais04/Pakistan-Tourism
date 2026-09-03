@@ -1,5 +1,3 @@
-"""Qdrant Cloud vector store: stores and retrieves the reviewed travel notes
-that ground the RAG chatbot's answers."""
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http import models as qmodels
 
@@ -10,6 +8,8 @@ settings = get_settings()
 
 _client: AsyncQdrantClient | None = None
 
+EMBEDDING_DIM = 384
+
 
 def get_client() -> AsyncQdrantClient:
     global _client
@@ -18,7 +18,7 @@ def get_client() -> AsyncQdrantClient:
     return _client
 
 
-async def ensure_collection(vector_size: int = 1536) -> None:
+async def ensure_collection(vector_size: int = EMBEDDING_DIM) -> None:
     client = get_client()
     collections = await client.get_collections()
     names = [c.name for c in collections.collections]
@@ -30,7 +30,6 @@ async def ensure_collection(vector_size: int = 1536) -> None:
 
 
 async def upsert_notes(notes: list[dict]) -> None:
-    """notes: [{id, title, url, text}]. Embeds text and upserts into Qdrant."""
     client = get_client()
     points = []
     for i, note in enumerate(notes):
@@ -45,18 +44,42 @@ async def upsert_notes(notes: list[dict]) -> None:
     await client.upsert(collection_name=settings.qdrant_collection, points=points)
 
 
-async def search_notes(query: str, top_k: int = 3) -> list[dict]:
-    """Embed the query and return the closest reviewed notes with their scores."""
+def _to_note(payload: dict, score: float | None = None) -> dict:
+    note = {
+        "id": payload["note_id"],
+        "title": payload["title"],
+        "url": payload["url"],
+        "text": payload["text"],
+    }
+    if score is not None:
+        note["score"] = score
+    return note
+
+
+async def search_notes(query: str, top_k: int = 3, candidate_limit: int | None = None) -> list[dict]:
     client = get_client()
     vector = await embed_text(query)
-    hits = await client.search(collection_name=settings.qdrant_collection, query_vector=vector, limit=top_k)
-    return [
-        {
-            "id": hit.payload["note_id"],
-            "title": hit.payload["title"],
-            "url": hit.payload["url"],
-            "text": hit.payload["text"],
-            "score": hit.score,
-        }
-        for hit in hits
-    ]
+    hits = await client.search(
+        collection_name=settings.qdrant_collection,
+        query_vector=vector,
+        limit=candidate_limit or top_k,
+    )
+    return [_to_note(hit.payload, hit.score) for hit in hits]
+
+
+async def fetch_all_notes() -> list[dict]:
+    client = get_client()
+    notes: list[dict] = []
+    offset = None
+    while True:
+        points, offset = await client.scroll(
+            collection_name=settings.qdrant_collection,
+            limit=256,
+            offset=offset,
+            with_payload=True,
+            with_vectors=False,
+        )
+        notes.extend(_to_note(point.payload) for point in points)
+        if offset is None:
+            break
+    return notes

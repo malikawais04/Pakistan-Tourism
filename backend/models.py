@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 class ChatTurn(BaseModel):
     role: str = Field(pattern="^(user|assistant)$")
-    content: str = Field(max_length=1200)
+    content: str = Field(max_length=3000)
 
 
 class ChatRequest(BaseModel):

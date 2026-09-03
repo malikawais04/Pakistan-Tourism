@@ -29,7 +29,7 @@ export default function Hero() {
     <section className="hero" ref={sectionRef}>
       <motion.img
         className="hero-image"
-        src={assets.hero}
+        src={assets.hero_}
         alt="A winding road leading into the Karakoram mountains"
         style={{ y: imageY, scale: 1.08 }}
       />
