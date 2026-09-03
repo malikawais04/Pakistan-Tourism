@@ -6,14 +6,14 @@
 4. Return the response
 """
 import time
-
+import traceback
 from fastapi import APIRouter, HTTPException
 
-from ..core.database import save_turn
-from ..models import ChatRequest, ChatResponse, Source
-from ..seed_data import GUIDE_NOTES
-from ..services import qdrant_service
-from ..services.openai_service import generate_answer
+from core.database import save_turn
+from models import ChatRequest, ChatResponse, Source
+from seed_data import GUIDE_NOTES
+from services import qdrant_service
+from services.openai_service import generate_answer
 
 router = APIRouter(tags=["chat"])
 
@@ -51,8 +51,12 @@ async def chat(payload: ChatRequest) -> ChatResponse:
             context,
             [turn.model_dump() for turn in payload.history],
         )
-    except Exception as exc:  # OpenAI/network error
-        raise HTTPException(status_code=502, detail="The guide could not reach its reviewed notes just now.") from exc
+    # except Exception as exc:  # OpenAI/network error
+    #     raise HTTPException(status_code=502, detail="The guide could not reach its reviewed notes just now.") from exc
+
+    except Exception as exc:
+        traceback.print_exc()
+        raise
 
     # 3. Save to Neon Postgres (no-op if DATABASE_URL isn't configured).
     await save_turn(conversation_id, "user", payload.query)

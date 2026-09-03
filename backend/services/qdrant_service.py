@@ -3,8 +3,8 @@ that ground the RAG chatbot's answers."""
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http import models as qmodels
 
-from ..core.config import get_settings
-from .openai_service import embed_text
+from core.config import get_settings
+from services.openai_service import embed_text
 
 settings = get_settings()
 

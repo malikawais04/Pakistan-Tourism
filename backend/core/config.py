@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # OpenAI
-    openai_api_key: str = ""
-    openai_chat_model: str = "gpt-4o-mini"
+    groq_api_key: str = ""
+    groq_chat_model: str = "openai/gpt-oss-20b"
     openai_embedding_model: str = "text-embedding-3-small"
 
     # Qdrant Cloud
