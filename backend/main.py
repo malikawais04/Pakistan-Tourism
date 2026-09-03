@@ -62,3 +62,5 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy", "bm25_ready": bm25_service.is_ready()}
+
+#force commit
