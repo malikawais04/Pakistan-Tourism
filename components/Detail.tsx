@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import type { DetailEntry } from "@/lib/data";
 import { detailEntries } from "@/lib/data";
 import DestinationCard from "./DestinationCard";
 import Lightbox from "./Lightbox";
 import { useGuide } from "./GuideProvider";
+import Reveal from "@/components/motion/Reveal";
+import { StaggerGrid, StaggerItem } from "@/components/motion/StaggerGrid";
+import { easeOut, fadeUp, slideInLeft, slideInRight } from "@/lib/motion";
 
 export default function Detail({ entry }: { entry: DetailEntry }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -19,15 +23,20 @@ export default function Detail({ entry }: { entry: DetailEntry }) {
   return (
     <main className="detail-page">
       <div className="container">
-        <div className="breadcrumbs">
+        <motion.div
+          className="breadcrumbs"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: easeOut }}
+        >
           <Link href={entry.kind === "destination" ? "/destinations" : "/experiences"}>
             {entry.kind === "destination" ? "Destinations" : "Experiences"}
           </Link>
           <span>/</span>
           <span>{entry.title}</span>
-        </div>
+        </motion.div>
         <div className="detail-hero">
-          <div>
+          <Reveal variants={slideInLeft}>
             <span className="eyebrow">{entry.kicker}</span>
             <h1>{entry.title}</h1>
             <p>{entry.body}</p>
@@ -49,23 +58,33 @@ export default function Detail({ entry }: { entry: DetailEntry }) {
                 {entry.review.replace("Reviewed ", "")}
               </span>
             </div>
-          </div>
-          <img src={entry.gallery[0]} alt={entry.title} />
+          </Reveal>
+          <motion.img
+            src={entry.gallery[0]}
+            alt={entry.title}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9, ease: easeOut, delay: 0.1 }}
+          />
         </div>
-        <div className="gallery-strip">
+        <StaggerGrid className="gallery-strip" stagger={0.08} margin="-40px">
           {entry.gallery.map((image, i) => (
-            <button
-              type="button"
-              className="gallery-thumb"
-              key={image}
-              onClick={() => setLightboxIndex(i)}
-              aria-label={`Open ${entry.title} gallery image ${i + 1}`}
-            >
-              <img src={image} alt={`${entry.title} view ${i + 1}`} />
-              <span className="gallery-expand">+</span>
-            </button>
+            <StaggerItem key={image} full={false}>
+              <motion.button
+                type="button"
+                className="gallery-thumb"
+                onClick={() => setLightboxIndex(i)}
+                aria-label={`Open ${entry.title} gallery image ${i + 1}`}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.3, ease: easeOut }}
+              >
+                <img src={image} alt={`${entry.title} view ${i + 1}`} />
+                <span className="gallery-expand">+</span>
+              </motion.button>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGrid>
         {lightboxIndex !== null && (
           <Lightbox
             images={entry.gallery}
@@ -76,7 +95,7 @@ export default function Detail({ entry }: { entry: DetailEntry }) {
           />
         )}
         <div className="detail-body">
-          <article>
+          <Reveal as="article" variants={slideInLeft}>
             <span className="eyebrow">The note</span>
             <h2>
               Read the landscape
@@ -95,8 +114,8 @@ export default function Detail({ entry }: { entry: DetailEntry }) {
               <h3>When to go</h3>
               <p>{entry.bestTime}</p>
             </div>
-          </article>
-          <aside className="detail-aside">
+          </Reveal>
+          <Reveal as="aside" className="detail-aside" variants={slideInRight} delay={0.1}>
             <div className="detail-note">
               <span className="index-number">FIELD NOTE / 08</span>
               <p>{entry.gettingThere}</p>
@@ -108,13 +127,18 @@ export default function Detail({ entry }: { entry: DetailEntry }) {
                 entry requirements can change. Check current official and local sources.
               </p>
             </div>
-            <button className="primary-button" onClick={openGuide}>
+            <motion.button
+              className="primary-button"
+              onClick={openGuide}
+              whileHover={{ x: 3 }}
+              whileTap={{ scale: 0.96 }}
+            >
               Ask about this route <Sparkles size={16} />
-            </button>
-          </aside>
+            </motion.button>
+          </Reveal>
         </div>
         <section className="related-section">
-          <div className="section-heading">
+          <Reveal className="section-heading" variants={fadeUp}>
             <div>
               <span className="eyebrow">Keep wandering</span>
               <h2>
@@ -123,12 +147,14 @@ export default function Detail({ entry }: { entry: DetailEntry }) {
                 <em>notes.</em>
               </h2>
             </div>
-          </div>
-          <div className="card-grid">
+          </Reveal>
+          <StaggerGrid className="card-grid" stagger={0.12}>
             {related.map((item) => (
-              <DestinationCard key={item.slug} item={item} kind={item.kind} />
+              <StaggerItem key={item.slug}>
+                <DestinationCard item={item} kind={item.kind} />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGrid>
         </section>
       </div>
     </main>

@@ -5,6 +5,9 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import DestinationCard from "@/components/DestinationCard";
 import { destinations } from "@/lib/data";
+import Reveal from "@/components/motion/Reveal";
+import { StaggerGrid, StaggerItem } from "@/components/motion/StaggerGrid";
+import { fadeUp, slideInLeft, slideInRight } from "@/lib/motion";
 
 export default function HomePage() {
   return (
@@ -13,11 +16,11 @@ export default function HomePage() {
       <main>
         <Hero />
         <section className="intro-section container">
-          <div className="section-stamp">
+          <Reveal className="section-stamp" variants={slideInLeft}>
             <span>02</span>
             <span>The short version</span>
-          </div>
-          <div className="intro-copy">
+          </Reveal>
+          <Reveal className="intro-copy" delay={0.1}>
             <p className="eyebrow">A country of contrasts</p>
             <h2>
               Come for the peaks.
@@ -31,19 +34,19 @@ export default function HomePage() {
             <Link href="/about" className="text-button">
               How we choose what to share <ArrowUpRight size={16} />
             </Link>
-          </div>
-          <div className="intro-aside">
+          </Reveal>
+          <Reveal className="intro-aside" variants={slideInRight} delay={0.2}>
             <div className="line-art">
               ╱╲
               <br />
               ╱  ╲
             </div>
             <p>Travel notes for the curious, with room for context and the occasional change of plan.</p>
-          </div>
+          </Reveal>
         </section>
         <section className="destinations-section">
           <div className="container">
-            <div className="section-heading">
+            <Reveal className="section-heading">
               <div>
                 <span className="eyebrow">03 / Places to begin</span>
                 <h2>
@@ -55,16 +58,18 @@ export default function HomePage() {
               <Link href="/destinations" className="text-button">
                 See all destinations <ArrowUpRight size={16} />
               </Link>
-            </div>
-            <div className="card-grid featured-grid">
+            </Reveal>
+            <StaggerGrid className="card-grid featured-grid" stagger={0.15}>
               {destinations.slice(0, 3).map((item) => (
-                <DestinationCard key={item.slug} item={item} />
+                <StaggerItem key={item.slug}>
+                  <DestinationCard item={item} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerGrid>
           </div>
         </section>
         <section className="season-strip">
-          <div className="container season-inner">
+          <Reveal className="container season-inner" variants={fadeUp}>
             <div className="season-label">
               <span className="eyebrow">Field note / 04</span>
               <span>When to go</span>
@@ -82,17 +87,17 @@ export default function HomePage() {
             <Link href="/experiences" className="circle-link" aria-label="Explore experiences">
               <ArrowUpRight size={22} />
             </Link>
-          </div>
+          </Reveal>
         </section>
         <section className="responsible-section container">
-          <div className="responsible-art">
+          <Reveal className="responsible-art" variants={slideInLeft}>
             <div className="stamp">
               LEAVE
               <br />
               ROOM
             </div>
-          </div>
-          <div className="responsible-copy">
+          </Reveal>
+          <Reveal className="responsible-copy" variants={slideInRight} delay={0.1}>
             <span className="eyebrow">05 / Travel with context</span>
             <h2>
               Go gently.
@@ -106,10 +111,10 @@ export default function HomePage() {
             <Link href="/about" className="text-button">
               Read our approach <ArrowUpRight size={16} />
             </Link>
-          </div>
+          </Reveal>
         </section>
         <section className="final-cta">
-          <div className="container final-inner">
+          <Reveal className="container final-inner" variants={fadeUp}>
             <span className="eyebrow">06 / Your next page</span>
             <h2>
               So — where
@@ -119,7 +124,7 @@ export default function HomePage() {
             <Link href="/contact" className="primary-button light">
               Plan a first route <ArrowUpRight size={17} />
             </Link>
-          </div>
+          </Reveal>
         </section>
       </main>
       <Footer />

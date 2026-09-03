@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, Sparkles, X } from "lucide-react";
 import { assets } from "@/lib/data";
 import { useGuide } from "./GuideProvider";
+import { easeOut } from "@/lib/motion";
 
 const links: [string, string][] = [
   ["Destinations", "/destinations"],
@@ -14,6 +16,15 @@ const links: [string, string][] = [
   ["Contact", "/contact"],
 ];
 
+const navListVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
+};
+const navItemVariants = {
+  hidden: { opacity: 0, y: -8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: easeOut } },
+};
+
 export default function Header() {
   const [menu, setMenu] = useState(false);
   const pathname = usePathname();
@@ -21,7 +32,12 @@ export default function Header() {
   const lightPage = pathname !== "/";
 
   return (
-    <header className={`site-header ${lightPage ? "light-header" : ""}`}>
+    <motion.header
+      className={`site-header ${lightPage ? "light-header" : ""}`}
+      initial={{ y: -24, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: easeOut }}
+    >
       <div className="header-inner">
         <Link href="/" className="brand" aria-label="Pakistan Tourism home">
           <img src={assets.mark} alt="" />
@@ -31,26 +47,50 @@ export default function Header() {
             <i>Tourism</i>
           </span>
         </Link>
-        <nav className={`main-nav ${menu ? "is-open" : ""}`} aria-label="Primary navigation">
+        <motion.nav
+          className={`main-nav ${menu ? "is-open" : ""}`}
+          aria-label="Primary navigation"
+          initial="hidden"
+          animate="visible"
+          variants={navListVariants}
+        >
           {links.map(([label, href]) => (
-            <Link key={href} href={href} onClick={() => setMenu(false)}>
-              {label}
-            </Link>
+            <motion.div key={href} variants={navItemVariants} className="nav-item">
+              <Link href={href} onClick={() => setMenu(false)}>
+                {label}
+              </Link>
+            </motion.div>
           ))}
-        </nav>
+        </motion.nav>
         <div className="header-actions">
-          <button className="guide-pill" onClick={openGuide}>
+          <motion.button
+            className="guide-pill"
+            onClick={openGuide}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+          >
             <Sparkles size={15} /> Ask the guide
-          </button>
+          </motion.button>
           <button
             className="menu-button"
             aria-label={menu ? "Close menu" : "Open menu"}
             onClick={() => setMenu(!menu)}
           >
-            {menu ? <X size={21} /> : <Menu size={21} />}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={menu ? "close" : "open"}
+                initial={{ opacity: 0, rotate: -45 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 45 }}
+                transition={{ duration: 0.18 }}
+                style={{ display: "flex" }}
+              >
+                {menu ? <X size={21} /> : <Menu size={21} />}
+              </motion.span>
+            </AnimatePresence>
           </button>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }
