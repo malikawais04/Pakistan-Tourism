@@ -10,6 +10,21 @@ from services import bm25_service
 
 settings = get_settings()
 
+# Clean frontend URL to remove trailing slashes (e.g. 'https://site.vercel.app/' -> 'https://site.vercel.app')
+clean_frontend_origin = (
+    settings.frontend_origin.rstrip("/") if getattr(settings, "frontend_origin", None) else ""
+)
+
+# Build dynamic allowed origins list
+origins = [
+    clean_frontend_origin,
+    "https://pakistan-tourism-awais.vercel.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+# Filter out empty strings
+allowed_origins = list({o for o in origins if o})
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,7 +45,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_origin, "http://localhost:3000"],
+    allow_origins=["*"], # Allows EVERYTHING
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
