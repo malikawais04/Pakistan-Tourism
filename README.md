@@ -133,13 +133,21 @@ If Qdrant isn't reachable (e.g. local dev without a seeded collection), the back
 3. After the first deploy, run `python -m seed_data` once (locally, pointed at production Qdrant, or via a one-off job) to populate the collection.
 4. Update `FRONTEND_ORIGIN` to your Vercel URL and redeploy so CORS allows it.
 
-## Screenshots
-
-_Add screenshots of the homepage, a destination detail page, and the open chat guide here before submission._
-
 ## Live links
 
 - GitHub repository(Front-end): https://github.com/malikawais04/Pakistan-Tourism.git
 - GitHub repository(Back-end): https://github.com/malikawais04/Pakistan-Tourism-Backend
 - Deployed website (Vercel): https://pakistan-tourism-awais.vercel.app/
 - Demo video: https://drive.google.com/file/d/1GCICB6XhSpeMjrpRS1XiSnF9Aa1n1i8K/view?usp=sharing
+
+## Screenshots
+
+<img width="948" height="437" alt="image" src="https://github.com/user-attachments/assets/3cee8173-f40c-47c1-b84b-81691429fdf2" />
+
+<img width="948" height="438" alt="image" src="https://github.com/user-attachments/assets/9c6db9ec-40b1-4a9c-8108-97a538f08b62" />
+
+<img width="948" height="440" alt="image" src="https://github.com/user-attachments/assets/e75810c7-2fe8-4c59-b703-91fce2ada003" />
+
+
+
+
