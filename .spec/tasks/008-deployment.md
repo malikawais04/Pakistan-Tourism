@@ -1,7 +1,7 @@
 # Task 008: Deployment
 
 ## Status
-Not Started
+Completed
 
 ## Priority
 High
