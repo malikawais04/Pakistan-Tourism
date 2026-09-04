@@ -1,7 +1,7 @@
 # Task 007: Testing
 
 ## Status
-Not Started
+Completed
 
 ## Priority
 Medium
