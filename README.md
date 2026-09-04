@@ -139,10 +139,7 @@ _Add screenshots of the homepage, a destination detail page, and the open chat g
 
 ## Live links
 
-- GitHub repository: _add link_
-- Deployed website (Vercel): _add link_
-- Demo video: _add link_
-
-## License
-
-MIT — built for coursework; content and imagery are placeholders and should be replaced with properly licensed material before any public/commercial use.
+- GitHub repository(Front-end): https://github.com/malikawais04/Pakistan-Tourism.git
+- GitHub repository(Back-end): https://github.com/malikawais04/Pakistan-Tourism-Backend
+- Deployed website (Vercel): https://pakistan-tourism-awais.vercel.app/
+- Demo video: https://drive.google.com/file/d/1GCICB6XhSpeMjrpRS1XiSnF9Aa1n1i8K/view?usp=sharing
